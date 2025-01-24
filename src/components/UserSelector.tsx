@@ -9,7 +9,6 @@ type Props = {
   users: User[];
   setUsers: (users: User[]) => void;
   selectedUser: User | null;
-  setSelectedUser: (selectedUser: User | null) => void;
   setSelectedPost: (selectedPost: Post | null) => void;
 };
 
@@ -18,22 +17,33 @@ export const UserSelector: React.FC<Props> = ({
   users,
   setUsers,
   selectedUser,
-  setSelectedUser,
   setSelectedPost,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     client.get<User[]>(`/users`).then(setUsers);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setUsers]);
 
-  const handleUserSelect = (user: User) => {
-    addPosts(user.id);
-    setSelectedUser(user);
-    setIsDropdownOpen(false);
-    setSelectedPost(null);
-  };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+
+      if (!target.closest('.dropdown')) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('click', handleClickOutside);
+    } else {
+      document.removeEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   return (
     <div
@@ -47,7 +57,6 @@ export const UserSelector: React.FC<Props> = ({
           aria-haspopup="true"
           aria-controls="dropdown-menu"
           onClick={() => setIsDropdownOpen(prev => !prev)}
-          onBlur={() => setIsDropdownOpen(false)}
         >
           <span>{selectedUser ? selectedUser.name : 'Choose a user'}</span>
 
@@ -70,7 +79,11 @@ export const UserSelector: React.FC<Props> = ({
                   'is-active': selectedUser?.id === user.id,
                 })}
                 key={user.id}
-                onMouseDown={() => handleUserSelect(user)}
+                onClick={() => {
+                  addPosts(user.id);
+                  setIsDropdownOpen(false);
+                  setSelectedPost(null);
+                }}
               >
                 {user.name}
               </a>

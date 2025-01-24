@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/indent */
-// import classNames from 'classnames';
 
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
@@ -29,12 +28,12 @@ export const App = () => {
 
   useEffect(() => {
     setSelectedUser(null);
-    setPosts([]);
   }, []);
 
   const addPosts = (userId: number) => {
     setIsLoading(true);
     setIsError(false);
+    setSelectedUser(users.find(user => user.id === userId) || null);
 
     client
       .get<Post[]>(`/posts?userId=${userId}`)
@@ -81,7 +80,6 @@ export const App = () => {
                   users={users}
                   setUsers={setUsers}
                   selectedUser={selectedUser}
-                  setSelectedUser={setSelectedUser}
                   setSelectedPost={setSelectedPost}
                 />
               </div>

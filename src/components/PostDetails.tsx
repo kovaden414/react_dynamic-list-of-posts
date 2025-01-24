@@ -24,9 +24,12 @@ export const PostDetails: React.FC<Props> = ({
   setComments,
 }) => {
   const handleCommentDeleteButton = (commentId: number) => {
-    setComments(comments.filter(comment => comment.id !== commentId));
+    client.delete(`/comments/${commentId}`).catch(error => {
+      // eslint-disable-next-line no-console
+      console.log(error);
+    });
 
-    client.delete(`/comments/${commentId}`);
+    setComments(comments.filter(comment => comment.id !== commentId));
   };
 
   return (

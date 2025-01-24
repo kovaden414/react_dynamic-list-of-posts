@@ -28,7 +28,9 @@ export const NewCommentForm: React.FC<Props> = ({
     event.preventDefault();
 
     setNameError(!name);
-    setEmailError(!email);
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    setEmailError(!regex.test(email));
     setCommentBodyError(!commentBody);
 
     if (!name || !email || !commentBody) {
@@ -47,6 +49,10 @@ export const NewCommentForm: React.FC<Props> = ({
       .then(newComment => {
         setComments([...comments, newComment]);
         setCommentBody('');
+      })
+      .catch(error => {
+        // eslint-disable-next-line no-console
+        console.log(error);
       })
       .finally(() => {
         setIsLoading(false);
