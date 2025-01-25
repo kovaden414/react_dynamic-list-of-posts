@@ -3,7 +3,6 @@ import { NewCommentForm } from './NewCommentForm';
 import { Post } from '../types/Post';
 import { Comment } from '../types/Comment';
 import { client } from '../utils/fetchClient';
-import classNames from 'classnames';
 import { useState } from 'react';
 
 type Props = {
@@ -52,7 +51,7 @@ export const PostDetails: React.FC<Props> = ({
         </div>
 
         <div className="block">
-          {isSideBarLoading && <Loader />}
+          {(isSideBarLoading || isDeleteButtonLoading) && <Loader />}
 
           {isError && (
             <div className="notification is-danger" data-cy="CommentsError">
@@ -86,9 +85,7 @@ export const PostDetails: React.FC<Props> = ({
                       <button
                         data-cy="CommentDelete"
                         type="button"
-                        className={classNames('delete is-small', {
-                          'is-loading': isDeleteButtonLoading,
-                        })}
+                        className="delete is-small"
                         aria-label="delete"
                         onClick={() => handleCommentDeleteButton(comment.id)}
                       >
