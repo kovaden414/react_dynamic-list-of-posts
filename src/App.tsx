@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/indent */
+import classNames from 'classnames';
 
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
@@ -12,7 +13,6 @@ import { client } from './utils/fetchClient';
 import { Post } from './types/Post';
 import { useEffect, useState } from 'react';
 import { User } from './types/User';
-import classNames from 'classnames';
 import { Comment } from './types/Comment';
 
 export const App = () => {
@@ -141,6 +141,7 @@ export const App = () => {
                   setComments={setComments}
                   isSideBarLoading={isSideBarLoading}
                   isError={isError}
+                  setIsError={setIsError}
                   isFormVisible={isFormVisible}
                   setIsFormVisible={setIsFormVisible}
                 />

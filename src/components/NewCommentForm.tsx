@@ -9,12 +9,14 @@ type Props = {
   selectedPost: Post;
   comments: Comment[];
   setComments: (comments: Comment[]) => void;
+  setIsError: (isError: boolean) => void;
 };
 
 export const NewCommentForm: React.FC<Props> = ({
   selectedPost,
   comments,
   setComments,
+  setIsError,
 }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -38,6 +40,7 @@ export const NewCommentForm: React.FC<Props> = ({
     }
 
     setIsLoading(true);
+    let hasError = false;
 
     client
       .post<Comment>('/comments', {
@@ -50,12 +53,12 @@ export const NewCommentForm: React.FC<Props> = ({
         setComments([...comments, newComment]);
         setCommentBody('');
       })
-      .catch(error => {
-        // eslint-disable-next-line no-console
-        console.log(error);
+      .catch(() => {
+        hasError = true;
       })
       .finally(() => {
         setIsLoading(false);
+        setIsError(hasError);
       });
   };
 

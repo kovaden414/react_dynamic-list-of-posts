@@ -3,6 +3,8 @@ import { NewCommentForm } from './NewCommentForm';
 import { Post } from '../types/Post';
 import { Comment } from '../types/Comment';
 import { client } from '../utils/fetchClient';
+import classNames from 'classnames';
+import { useState } from 'react';
 
 type Props = {
   selectedPost: Post;
@@ -10,6 +12,7 @@ type Props = {
   setComments: (comments: Comment[]) => void;
   isSideBarLoading: boolean;
   isError: boolean;
+  setIsError: (isError: boolean) => void;
   isFormVisible: boolean;
   setIsFormVisible: (isFormVisible: boolean) => void;
 };
@@ -19,15 +22,22 @@ export const PostDetails: React.FC<Props> = ({
   comments,
   isSideBarLoading,
   isError,
+  setIsError,
   isFormVisible,
   setIsFormVisible,
   setComments,
 }) => {
+  const [isDeleteButtonLoading, setIsDeleteButtonLoading] = useState(false);
+
   const handleCommentDeleteButton = (commentId: number) => {
-    client.delete(`/comments/${commentId}`).catch(error => {
-      // eslint-disable-next-line no-console
-      console.log(error);
-    });
+    setIsDeleteButtonLoading(true);
+
+    client
+      .delete(`/comments/${commentId}`)
+      .catch(() => setIsError(true))
+      .finally(() => {
+        setIsDeleteButtonLoading(false);
+      });
 
     setComments(comments.filter(comment => comment.id !== commentId));
   };
@@ -76,7 +86,9 @@ export const PostDetails: React.FC<Props> = ({
                       <button
                         data-cy="CommentDelete"
                         type="button"
-                        className="delete is-small"
+                        className={classNames('delete is-small', {
+                          'is-loading': isDeleteButtonLoading,
+                        })}
                         aria-label="delete"
                         onClick={() => handleCommentDeleteButton(comment.id)}
                       >
@@ -109,6 +121,7 @@ export const PostDetails: React.FC<Props> = ({
             selectedPost={selectedPost}
             comments={comments}
             setComments={setComments}
+            setIsError={setIsError}
           />
         )}
       </div>
